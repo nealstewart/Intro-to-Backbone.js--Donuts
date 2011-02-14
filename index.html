@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Intro to Backbone.js: The Source</title>
+    <link rel=stylesheet type="text/css" href="stylesheets/style.css" />
+
+    <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.4.js"></script>
+    <script src="scripts/vendor/underscore.js"></script>
+    <script src="scripts/vendor/backbone.js"></script>
+    <script src="scripts/vendor/backbone.localStorage.js"></script>
+    <script src="scripts/lib/models/donuts.js"></script>
+    <script src="scripts/lib/views/donuts/donut.js"></script>
+    <script src="scripts/lib/views/donuts/adder.js"></script>
+    <script src="scripts/lib/views/donuts/example.js"></script>
+    <script src="scripts/lib/views/updating_collection.js"></script>
+    <script src="scripts/lib/controllers/example.js"></script>
+    <script src="scripts/lib/application.js"></script>
+  </head>
+  <body>
+
+    <header id="main_header">
+      An Intro to Backbone.js: The Source 
+    </header>
+
+    <aside>
+      <p>
+        I've chosen to use backbone.localStorage for the purposes of this demo. 
+        It removes the need for setting up a backend initially and allows
+        for easy prototyping in Backbone.
+      </p>
+      
+      <p>
+        The uris remain the same, but reference keys to values stored in localStorage, rather than data on a server.
+      </p>
+    </aside>
+    
+    <nav>
+      <header>Examples</header>
+      <ul>
+        <li>
+          <a href="#example/controller">Controller</a>
+        </li>
+        <li>
+          <a href="#example/model_view">View bound to Model</a>
+        </li>
+        <li>
+          <a href="#example/collection_view">View bound to Collection</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="example controller">
+    <h3>Backbone.Controller</h3>
+      <pre><code><script style="display:block">var MyController = Backbone.Controller.extend({
+  routes : {
+    "say/:something" : "say"
+  },
+
+  say : function(something) {
+    alert(something);
+  }
+});
+
+var yC = new MyController;
+      </script></code></pre>
+
+      <p>Try clicking the links below:</p>
+
+      <p><a href="#say/hello_world">Say "hello_world"</a></p>
+      <p><a href="#say/cheeseburger">Say "cheeseburger"</a></p>
+    </section>
+
+    <section style="display:none" class="example model_view">
+      <h3>Backbone.View</h3>
+      <h4>Binding To A Model</h4>
+      <p><a href="#" class=name_changer data-donut_name="Boston Cream"><pre><code>donut.set({'name' : 'Boston Cream' });
+donut.save();</code></pre> </a></p>
+      <p><a href="#" class=name_changer data-donut_name="Lemon-Filled"><pre><code>donut.set({'name' : 'Lemon-Filled' });
+donut.save();</code></pre> </a></p>
+      
+      <div class="example_donut_view">
+        <h4>DonutView</h4>
+        <div id=normal_donut_view></div>
+      </div>
+
+      <div class="example_donut_view">
+        <h4>UpdatingDonutView</h4>
+        <div id=updating_donut_view></div>
+      </div>
+    </section>
+
+    <section style="display:none" class="example collection_view">
+      <h3>Backbone.View</h3>
+      <h4>Binding To A Collection</h4>
+      <p>Both of these lists are are in sync with the same collection.</p>
+      <p>So that when you 'remove' them from the one on the left, they get removed from both.</p>
+      <p>Snazzy!</p>
+      <form class="donut_adder">
+        <input name="donut[name]" type=text />
+        <button class="submitter">Add a Donut</button>
+      </form>
+      <div style="overflow:auto">
+        <ul class="donuts destroyable">
+        </ul>
+        <ul class="donuts uneditable">
+        </ul>
+      </div>
+      <h4>Source:</h4>
+      <pre><code><script style="display:block">$(function() {
+  window.donuts = new Donuts;
+  window.donuts.fetch();
+
+  var donutAdder = new DonutAdder({
+    collection : donuts,
+    el : $('.donut_adder')[0]
+  });
+
+  // The List on the Right
+  var updatingCollectionView = new UpdatingCollectionView({
+    collection : window.donuts,
+    childViewConstructor : UpdatingDonutView,
+    childViewTagName : "li",
+    el : $('.example.collection_view .donuts.uneditable')[0]
+  });
+  updatingCollectionView.render();
+
+  // The List on the Left
+  var updatingAndRemovingCollectionView = new UpdatingCollectionView({
+    collection : window.donuts,
+    childViewConstructor : RemovableUpdatingDonutView,     
+    childViewTagName : "li",
+    el : $('.example.collection_view .donuts.destroyable')[0]
+  });
+  updatingAndRemovingCollectionView.render();
+
+  /*
+    The only difference is the child view constructor passed. Nifty, no?
+  */
+});</script></pre></code>
+    </section>
+  </body>
+</html>
